@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_spazieren"
+        android:icon="@drawable/ic_directions_walk_black_24dp"
+        android:title="Spazieren" />
+
+    <item
+        android:id="@+id/navigation_laufen"
+        android:icon="@drawable/ic_directions_run_black_24dp"
+        android:title="Laufen" />
+    <item
+        android:id="@+id/navigation_dashboard"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:title="@string/title_dashboard" />
+
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_settings_black_24dp"
+        android:title="Einstellungen" />
+
+</menu>

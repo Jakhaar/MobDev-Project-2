@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Project2</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string-array name="font_sizes">
+        <item>Woche</item>
+        <item>Monat</item>
+        <item>Jahr</item>
+        <item>Alle</item>
+    </string-array>
+</resources>
