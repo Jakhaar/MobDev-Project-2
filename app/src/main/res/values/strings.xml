@@ -5,4 +5,7 @@
     <string name="settings">Einstellung</string>
     <string name="dashboard">Dashboard</string>
     <string name="title_activity_maps">Map</string>
+    <string name="walk_activity_info">Drück auf "Start" um dein Spaziergang zu beginnen und zu tracken</string>
+    <string name="running_activity_info">Wähle ein Modus aus und drücke start um dein Lauf zu beginnen</string>
+    <string name="datum">01/01/1900</string>
 </resources>
