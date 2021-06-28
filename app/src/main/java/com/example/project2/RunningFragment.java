@@ -20,22 +20,31 @@ import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static android.content.Context.MODE_PRIVATE;
 
 public class RunningFragment extends Fragment {
 
-    private int startTime, timeLeftOver, endTime, defaultStartTime = 60000;
-    private boolean timerIsRunning;
+    private int startTime, time;
+    private int timeLeft;
+    private int endTime;
+    private boolean timerIsRunning, mapReady;
     private CountDownTimer countDownTimer;
+    private Timer timer;
+    private TimerTask timerTask;
+
+    private Spinner runningModeSpinner;
+    private EditText timerTextView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_running, container, false);
         Button startButton = view.findViewById(R.id.startButton);
-        Spinner runningModeSpinner = view.findViewById(R.id.runningModeSpinner);
-        EditText timerTextView = view.findViewById(R.id.timerTextView);
+        runningModeSpinner = view.findViewById(R.id.runningModeSpinner);
+        timerTextView = view.findViewById(R.id.timerTextView);
         //TextView textViewCountDown = view.findViewById(R.id.);
 
         ArrayList<String> runningModes = new ArrayList<>(3);
@@ -47,21 +56,28 @@ public class RunningFragment extends Fragment {
         runningModes.add("STRECKE (KM)");
         runningModeSpinner.setAdapter(spinnerModesAdapter);
 
-
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                resetTime();
                 timerMode(timerTextView);
-                //Intent intent = new Intent(getActivity(), MapsActivity.class);
-                //startActivity(intent);
+                if(mapReady){
+                    Intent intent = new Intent(getActivity(), MapsActivity.class);
+                    startActivity(intent);
+                }
             }
         });
-
         return view;
     }
 
-    private void minimizeKeyboard(){
-        //TODO:Code here
+    private String getCurrentMode(Spinner spinner) {
+         return spinner.getSelectedItem().toString();
+    }
+
+    private void resetTime(){
+        startTime = 0;
+        timeLeft = 0;
+        endTime = 0;
     }
 
     private String timerFormatted(int value){
@@ -69,26 +85,49 @@ public class RunningFragment extends Fragment {
         int minutes = (value/1000) % 3600 / 60;
         int seconds = (value/1000) % 60;
 
-        String timeFormatted = String.format(Locale.getDefault(),
+        return String.format(Locale.getDefault(),
                 "%02d:%02d:%02d", hours, minutes, seconds);
-
-            return timeFormatted;
     }
 
     private void runTimer(){
         if(timerIsRunning){
-            stopTimer();
+            switch (getCurrentMode(runningModeSpinner)){
+                case "TIMER":
+                    countDownStopTimer();break;
+                case "STOPPUHR":
+                    countUpStopTimer();break;
+            }
         } else {
-            startTimer();
+            switch (getCurrentMode(runningModeSpinner)){
+                case "TIMER":
+                    countDownStartTimer();break;
+                case "STOPPUHR":
+                    countUpStartTimer();break;
+            }
         }
     }
 
-    private void startTimer() {
-        countDownTimer = new CountDownTimer(timeLeftOver, 1000) {
+    private void countUpStartTimer() {
+        timerTask  = new TimerTask() {
+            @Override
+            public void run() {
+                timeLeft++;
+                Toast.makeText(getContext(),""+timerFormatted(timeLeft),Toast.LENGTH_LONG).show();
+            }
+        };
+        timer.scheduleAtFixedRate(timerTask, 0, 1000);
+    }
+
+    private void countUpStopTimer() {
+        timerTask.cancel();
+        timerIsRunning = false;
+    }
+
+    private void countDownStartTimer() {
+        countDownTimer = new CountDownTimer(timeLeft, 1000) {
             @Override
             public void onTick(long l) {
-                timeLeftOver = (int) l;
-                Toast.makeText(getContext(), "" + timerFormatted(timeLeftOver), Toast.LENGTH_LONG).show();
+                timeLeft = (int) l;
             }
 
             @Override
@@ -100,7 +139,7 @@ public class RunningFragment extends Fragment {
         timerIsRunning = true;
     }
 
-    private void stopTimer() {
+    private void countDownStopTimer() {
         countDownTimer.cancel();
         timerIsRunning = false;
     }
@@ -115,7 +154,7 @@ public class RunningFragment extends Fragment {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putInt("startTime", startTime);
-        editor.putInt("timeLeft", timeLeftOver);
+        editor.putInt("timeLeft", timeLeft);
         editor.putBoolean("timerIsRunning", timerIsRunning);
         editor.putInt("endTime",endTime);
 
@@ -131,56 +170,59 @@ public class RunningFragment extends Fragment {
         super.onStart();
 
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
-        timeLeftOver = sharedPreferences.getInt("timeLeft", startTime);
+        timeLeft = sharedPreferences.getInt("timeLeft", startTime);
         timerIsRunning = sharedPreferences.getBoolean("timerIsRunning", false);
+        int defaultStartTime = 60000;
         startTime = sharedPreferences.getInt("startTime", defaultStartTime);
 
 
         if(timerIsRunning){
             endTime = sharedPreferences.getInt("endTime", 0);
-            timeLeftOver = (int) (endTime - System.currentTimeMillis());
+            timeLeft = (int) (endTime - System.currentTimeMillis());
 
-            if(timeLeftOver < 0){
-                timeLeftOver = 0;
+            if(timeLeft < 0){
+                timeLeft = 0;
                 timerIsRunning = false;
             }else {
-                startTimer();
+                countDownStartTimer();
             }
-        }
-    }
-
-    private void textViewVisibility(int a){
-        switch(a){
-            //case 17: visibility();break;
-        }
-    }
-
-    private void visibility(EditText editText, boolean bool) {
-        if(bool){
-            editText.setVisibility(getView().INVISIBLE);
-        } else {
-            editText.setVisibility(getView().VISIBLE);
         }
     }
 
     private void timerMode(TextView timerTextView){
         String userInput = timerTextView.getText().toString();
+        mapReady = false;
+
+        switch (runningModeSpinner.getSelectedItem().toString()){
+            case "TIMER":
+                if(!inputCheck(userInput)){
+                    return;
+                }
+                setTime(time);
+                runTimer();break;
+            case "STOPPUHR":
+                countUpStartTimer();break;
+        }
+        mapReady = true;
+    }
+
+    private boolean inputCheck(String userInput){
         if(userInput.length() == 0){
             Toast.makeText(getContext(),"Bitte gebe ein Wert ein", Toast.LENGTH_LONG).show();
-            return;
+            return false;
         }
 
-        int time = Integer.parseInt(userInput) * 60000;
+        time = Integer.parseInt(userInput) * 60000;
         if(time == 0) {
             Toast.makeText(getContext(),"Bitte gebe einen positiven Wert ein", Toast.LENGTH_LONG).show();
-            return;
+            return false;
         }
-        setTime(time);
-        runTimer();
+        return true;
     }
 
     private void setTime(int milliseconds){
         startTime = milliseconds;
-        Toast.makeText(getContext(), "Timer wurde gesetzt " + startTime, Toast.LENGTH_LONG).show();
+        timeLeft = startTime;
+        Toast.makeText(getContext(), "Timer wurde gesetzt.\nLos geht's!", Toast.LENGTH_LONG).show();
     }
 }

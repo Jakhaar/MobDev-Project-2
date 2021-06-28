@@ -8,4 +8,10 @@
     <string name="walk_activity_info">Drück auf "Start" um dein Spaziergang zu beginnen und zu tracken</string>
     <string name="running_activity_info">Wähle ein Modus aus und drücke start um dein Lauf zu beginnen</string>
     <string name="datum">01/01/1900</string>
+    <string name="timerMode">TIMER</string>
+    <string name="stoppuhrMode">STOPPUHR</string>
+    <string name="distanceMode">STRECKE KM</string>
+    <string name="minuten_kilometer">Minuten/Kilometer..</string>
+    <string name="timer">TIMER</string>
+    <string name="start">START</string>
 </resources>

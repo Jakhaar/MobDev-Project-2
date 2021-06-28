@@ -9,7 +9,7 @@
         android:id="@+id/startButton"
         android:layout_width="212dp"
         android:layout_height="69dp"
-        android:text="START"
+        android:text="@string/start"
         android:textSize="30sp"
         app:iconTint="#FFFFFF"
         android:background="@drawable/custom_spinner"
@@ -26,9 +26,9 @@
         android:layout_height="70dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/custom_spinner"
-        android:text="TIMER"
+        android:text="@string/timer"
         android:textAlignment="center"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -55,7 +55,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Minuten.."
+        android:hint="@string/minuten_kilometer"
         android:inputType="number"
         android:maxLength="4"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -63,6 +63,7 @@
         app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.609" />
+        app:layout_constraintVertical_bias="0.609"
+        android:importantForAutofill="no" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
