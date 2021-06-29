@@ -19,7 +19,7 @@ public class WalkFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_walk, container, false);
-        startButton = view.findViewById(R.id.startButton);
+        startButton = view.findViewById(R.id.stopButton);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

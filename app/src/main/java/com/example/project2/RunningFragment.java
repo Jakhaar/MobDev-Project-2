@@ -24,6 +24,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.example.project2.R.string.enterValue;
+import static com.example.project2.R.string.positivValue;
+import static com.example.project2.R.string.timerSet;
 
 public class RunningFragment extends Fragment {
 
@@ -42,10 +45,9 @@ public class RunningFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_running, container, false);
-        Button startButton = view.findViewById(R.id.startButton);
+        Button startButton = view.findViewById(R.id.stopButton);
         runningModeSpinner = view.findViewById(R.id.runningModeSpinner);
         timerTextView = view.findViewById(R.id.timerTextView);
-        //TextView textViewCountDown = view.findViewById(R.id.);
 
         ArrayList<String> runningModes = new ArrayList<>(3);
         ArrayAdapter<String> spinnerModesAdapter = new ArrayAdapter<>(getContext(),R.layout.style_spinner, runningModes);
@@ -63,6 +65,7 @@ public class RunningFragment extends Fragment {
                 timerMode(timerTextView);
                 if(mapReady){
                     Intent intent = new Intent(getActivity(), MapsActivity.class);
+                    intent.putExtra(getString(R.string.timeLeftCaps), timeLeft);
                     startActivity(intent);
                 }
             }
@@ -80,7 +83,7 @@ public class RunningFragment extends Fragment {
         endTime = 0;
     }
 
-    private String timerFormatted(int value){
+    public String timerFormatted(int value){
         int hours = (value/1000) / 3600;
         int minutes = (value/1000) % 3600 / 60;
         int seconds = (value/1000) % 60;
@@ -132,7 +135,8 @@ public class RunningFragment extends Fragment {
 
             @Override
             public void onFinish() {
-                Toast.makeText(getContext(), "Zeit ist vorbei!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), R.string.timeOver, Toast.LENGTH_LONG).show();
+
             }
         }.start();
 
@@ -150,13 +154,13 @@ public class RunningFragment extends Fragment {
     public void onStop() {
         super.onStop();
 
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(getString(R.string.sharedPreferences), MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putInt("startTime", startTime);
-        editor.putInt("timeLeft", timeLeft);
-        editor.putBoolean("timerIsRunning", timerIsRunning);
-        editor.putInt("endTime",endTime);
+        editor.putInt(getString(R.string.startTime), startTime);
+        editor.putInt(getString(R.string.timeLeft), timeLeft);
+        editor.putBoolean(getString(R.string.timerIsRunning), timerIsRunning);
+        editor.putInt(getString(R.string.endTime),endTime);
 
         editor.apply();
 
@@ -169,15 +173,15 @@ public class RunningFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
-        timeLeft = sharedPreferences.getInt("timeLeft", startTime);
-        timerIsRunning = sharedPreferences.getBoolean("timerIsRunning", false);
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(getString(R.string.sharedPreferences), MODE_PRIVATE);
+        timeLeft = sharedPreferences.getInt(getString(R.string.timeLeft), startTime);
+        timerIsRunning = sharedPreferences.getBoolean(getString(R.string.timerIsRunning), false);
         int defaultStartTime = 60000;
-        startTime = sharedPreferences.getInt("startTime", defaultStartTime);
+        startTime = sharedPreferences.getInt(getString(R.string.startTime), defaultStartTime);
 
 
         if(timerIsRunning){
-            endTime = sharedPreferences.getInt("endTime", 0);
+            endTime = sharedPreferences.getInt(getString(R.string.endTime), 0);
             timeLeft = (int) (endTime - System.currentTimeMillis());
 
             if(timeLeft < 0){
@@ -193,7 +197,7 @@ public class RunningFragment extends Fragment {
         String userInput = timerTextView.getText().toString();
         mapReady = false;
 
-        switch (runningModeSpinner.getSelectedItem().toString()){
+        switch (getCurrentMode(runningModeSpinner)){
             case "TIMER":
                 if(!inputCheck(userInput)){
                     return;
@@ -208,13 +212,13 @@ public class RunningFragment extends Fragment {
 
     private boolean inputCheck(String userInput){
         if(userInput.length() == 0){
-            Toast.makeText(getContext(),"Bitte gebe ein Wert ein", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), enterValue, Toast.LENGTH_LONG).show();
             return false;
         }
 
         time = Integer.parseInt(userInput) * 60000;
         if(time == 0) {
-            Toast.makeText(getContext(),"Bitte gebe einen positiven Wert ein", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), positivValue, Toast.LENGTH_LONG).show();
             return false;
         }
         return true;
@@ -223,6 +227,6 @@ public class RunningFragment extends Fragment {
     private void setTime(int milliseconds){
         startTime = milliseconds;
         timeLeft = startTime;
-        Toast.makeText(getContext(), "Timer wurde gesetzt.\nLos geht's!", Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), timerSet, Toast.LENGTH_LONG).show();
     }
 }

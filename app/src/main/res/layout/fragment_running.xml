@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/startButton"
+        android:id="@+id/stopButton"
         android:layout_width="212dp"
         android:layout_height="69dp"
         android:text="@string/start"

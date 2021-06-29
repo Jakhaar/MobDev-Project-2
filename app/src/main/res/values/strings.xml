@@ -14,4 +14,15 @@
     <string name="minuten_kilometer">Minuten/Kilometer..</string>
     <string name="timer">TIMER</string>
     <string name="start">START</string>
+    <string name="stop">Stop</string>
+    <string name="timeLeftCaps">TIMELEFT</string>
+    <string name="timeOver">Zeit ist vorbei!</string>
+    <string name="sharedPreferences">sharedPreferences</string>
+    <string name="timeLeft">timeLeft</string>
+    <string name="startTime">startTime</string>
+    <string name="timerIsRunning">timerIsRunning</string>
+    <string name="endTime">endTime</string>
+    <string name="enterValue">Bitte gebe ein Wert ein</string>
+    <string name="positivValue">Bitte gebe einen positiven Wert ein</string>
+    <string name="timerSet">Timer wurde gesetzt.\nLos geht\'s!</string>
 </resources>
